@@ -1,0 +1,42 @@
+name: Auto-Generate Arno Configs (Isolated Branch)
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # هر ۳۰ دقیقه یک‌بار
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run Config Generator
+        run: python generate.py
+
+      - name: Deploy configs to isolated 'configs' branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "Arno Automation Bot"
+          git config --global user.email "bot@arno.agency"
+          
+          # ساخت یا ورود به شاخه مجزا برای کانفیگ‌ها
+          git checkout --orphan configs || git checkout configs
+          git rm -rf . || true
+          
+          # انتقال خروجی‌ها به روت این شاخه مجزا
+          mv configs-output/* .
+          rmdir configs-output
+          
+          git add .
+          git commit -m "Auto-update 20 configs on isolated branch [skip ci]" || echo "No changes to commit"
+          git push origin configs --force
