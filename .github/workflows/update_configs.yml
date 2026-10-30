@@ -28,7 +28,7 @@ jobs:
           git checkout configs || git checkout -b configs
           git add configs/
           git commit -m "Auto update configs" || echo "No changes"
-          git push origin configs
+          git push origin configs --force
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
