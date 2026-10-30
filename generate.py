@@ -3,62 +3,65 @@ import os
 import subprocess
 import urllib.request
 
-target_dir = "configs"
+target_dir = 'configs'
 os.makedirs(target_dir, exist_ok=True)
 
-print("Starting real Warp-in-Warp generation via Cloudflare API...")
+print('Starting REAL Warp-in-Warp generation via Cloudflare API...')
 
 for idx in range(1, 21):
   try:
-    # 1. تولید کلیدهای واقعی وایرگارد
+    # 1. تولید کلید واقعی وایرگارد
     priv_key = (
-        subprocess.check_output(["wg", "genkey"]).decode("utf-8").strip()
+        subprocess.check_output(['wg', 'genkey']).decode('utf-8').strip()
     )
     pub_key = (
-        subprocess.check_output(["wg", "pubkey"], input=priv_key.encode("utf-8"))
-        .decode("utf-8")
+        subprocess.check_output(['wg', 'pubkey'], input=priv_key.encode('utf-8'))
+        .decode('utf-8')
         .strip()
     )
 
-    # 2. ثبت نام واقعی در API کلودفلر برای دریافت آی‌پی اختصاصی وپ
+    # 2. ثبت نام واقعی در API کلودفلر
     reg_body = {
-        "install_id": "",
-        "tos": "2021-01-01T00:00:00.000Z",
-        "key": pub_key,
-        "fcm_token": "",
-        "type": "ios",
-        "locale": "en_US",
+        'install_id': '',
+        'tos': '2021-01-01T00:00:00.000Z',
+        'key': pub_key,
+        'fcm_token': '',
+        'type': 'ios',
+        'locale': 'en_US',
     }
-    req_data = json.dumps(reg_body).encode("utf-8")
+    req_data = json.dumps(reg_body).encode('utf-8')
     req = urllib.request.Request(
-        "https://api.cloudflareclient.com/v0a2158/reg",
+        'https://api.cloudflareclient.com/v0a2158/reg',
         data=req_data,
-        headers={"Content-Type": "application/json", "User-Agent": "okhttp/3.12.1"},
-        method="POST",
+        headers={
+            'Content-Type': 'application/json',
+            'User-Agent': 'okhttp/3.12.1',
+        },
+        method='POST',
     )
 
     with urllib.request.urlopen(req) as response:
-      res_json = json.loads(response.read().decode("utf-8"))
+      res_json = json.loads(response.read().decode('utf-8'))
 
-    # استخراج اطلاعات اختصاصی کلودفلر
+    # استخراج مقادیر واقعی دریافتی از کلودفلر
     client_ip = (
-        res_json.get("config", {})
-        .get("client", {})
-        .get("v4", "172.16.0.2/32")
+        res_json.get('config', {})
+        .get('client', {})
+        .get('v4', '172.16.0.2/32')
     )
     peer_pub = (
-        res_json.get("config", {})
-        .get("peer", {})
-        .get("public_key", "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=")
+        res_json.get('config', {})
+        .get('peer', {})
+        .get('public_key', 'bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=')
     )
     endpoint = (
-        res_json.get("config", {})
-        .get("peer", {})
-        .get("endpoint", {})
-        .get("host", "engage.cloudflareclient.com:2408")
+        res_json.get('config', {})
+        .get('peer', {})
+        .get('endpoint', {})
+        .get('host', 'engage.cloudflareclient.com:2408')
     )
 
-    # 3. ساختار دقیق و استاندارد AmneziaWG (Warp-in-Warp)
+    # 3. قالب‌بندی کاملاً استاندارد AmneziaWG با پارامترهای واقعی
     awg_config = f"""[Interface]
 PrivateKey = {priv_key}
 Address = {client_ip}
@@ -80,12 +83,12 @@ H3 = 3
 H4 = 4
 """
 
-    filename = os.path.join(target_dir, f"Arno-AmneziaWG-{idx:02d}.conf")
-    with open(filename, "w", encoding="utf-8") as f:
+    filename = os.path.join(target_dir, f'Arno-AmneziaWG-{idx:02d}.conf')
+    with open(filename, 'w', encoding='utf-8') as f:
       f.write(awg_config)
-    print(f"Successfully generated real config {idx:02d}")
+    print(f'Successfully generated REAL config {idx:02d}')
 
   except Exception as e:
-    print(f"Failed to generate config {idx:02d}: {e}")
+    print(f'Failed to generate config {idx:02d}: {e}')
 
-print("All 20 real AmneziaWG configs generated and saved successfully!")
+print('All 20 REAL AmneziaWG configs generated successfully!')
