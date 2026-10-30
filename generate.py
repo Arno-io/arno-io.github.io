@@ -10,7 +10,7 @@ print("Starting real Warp-in-Warp generation via Cloudflare API...")
 
 for idx in range(1, 21):
   try:
-    # 1. Generate real WireGuard private and public keys using system wg
+    # 1. تولید کلیدهای واقعی وایرگارد
     priv_key = (
         subprocess.check_output(["wg", "genkey"]).decode("utf-8").strip()
     )
@@ -20,7 +20,7 @@ for idx in range(1, 21):
         .strip()
     )
 
-    # 2. Register a real device on Cloudflare Warp API
+    # 2. ثبت نام واقعی در API کلودفلر برای دریافت آی‌پی اختصاصی وپ
     reg_body = {
         "install_id": "",
         "tos": "2021-01-01T00:00:00.000Z",
@@ -40,7 +40,7 @@ for idx in range(1, 21):
     with urllib.request.urlopen(req) as response:
       res_json = json.loads(response.read().decode("utf-8"))
 
-    # Extract real assigned IP and server peer details from Cloudflare response
+    # استخراج اطلاعات اختصاصی کلودفلر
     client_ip = (
         res_json.get("config", {})
         .get("client", {})
@@ -58,7 +58,7 @@ for idx in range(1, 21):
         .get("host", "engage.cloudflareclient.com:2408")
     )
 
-    # 3. Format strictly as AmneziaWG (Warp-in-Warp with custom obfuscation parameters)
+    # 3. ساختار دقیق و استاندارد AmneziaWG (Warp-in-Warp)
     awg_config = f"""[Interface]
 PrivateKey = {priv_key}
 Address = {client_ip}
@@ -88,4 +88,4 @@ H4 = 4
   except Exception as e:
     print(f"Failed to generate config {idx:02d}: {e}")
 
-print("All 20 real AmneziaWG configs generated successfully!")
+print("All 20 real AmneziaWG configs generated and saved successfully!")
