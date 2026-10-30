@@ -21,13 +21,13 @@ jobs:
       - name: Run Generator Script
         run: python generate.py
 
-      - name: Commit and push real configs to configs branch
+      - name: Commit and push real configs
         run: |
           git config --global user.name "ArnoAutomationBot"
           git config --global user.email "bot@arno.io"
           git checkout configs || git checkout -b configs
           git add configs/
-          git commit -m "Auto-update real Warp-in-Warp AmneziaWG configs [skip ci]" || echo "No changes to commit"
+          git commit -m "Auto update configs" || echo "No changes"
           git push origin configs
 
 concurrency:
